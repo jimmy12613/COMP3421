@@ -1,4 +1,4 @@
-FROM php:8.1.11-apache
+FROM php:8.2.2-fpm
 RUN docker-php-ext-install mysqli pdo_mysql
 RUN apt-get update \
     && apt-get install -y libzip-dev \
@@ -8,4 +8,4 @@ RUN apt-get update \
     && docker-php-ext-configure intl \
     && docker-php-ext-install zip \
     && docker-php-ext-install intl
-RUN a2enmod rewrite
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
