@@ -355,3 +355,13 @@ services:
         - 2375
       networks:
         - backend
+
+### Mailhog ################################################
+    mailhog:
+      build: ./mailhog
+      ports:
+        - "1025:1025"
+        - "8025:8025"
+      networks:
+        - frontend
+        - backend
