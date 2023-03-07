@@ -4,6 +4,18 @@ import Dropdown from "@/Components/Dropdown";
 import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link } from "@inertiajs/react";
+// ajax call example.
+// import axios from "axios";
+
+// axios
+//     .get("/api/room")
+//     .then((response) => {
+//         myVar = response.data;
+//         console.log(response.data);
+//     })
+//     .catch((error) => {
+//         console.log(error);
+//     });
 
 export default function Authenticated({ auth, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
@@ -20,7 +32,7 @@ export default function Authenticated({ auth, header, children }) {
             </NavLink>
         ;
     }
-
+    
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
             <nav className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">

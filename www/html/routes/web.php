@@ -35,9 +35,11 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard',['justTesting' => 'Hello World!']);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/room', function () {
+Route::middleware('admin')->group(function () {
+    Route::get('/room', function () {
         return Inertia::render('Admin/Search');
-})->name('search');
+    })->name('room.search');
+});
 
 // 這定義了一組僅供經過身份驗證的用戶訪問的路由/profile。
 // 該組包括調用ProfileController edit方法的GET路由、

@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('location')->unique();
             $table->integer('capacity');
-            $table->string('equipment');
+            $table->integer('num_computers');
+            $table->integer('num_projectors');
+            $table->integer('num_microphones');
             $table->timestamps();
         });
     }

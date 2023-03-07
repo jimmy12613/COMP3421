@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use Termwind\Components\Dd;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -32,9 +33,21 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        $token = Auth::user()->createToken('apiToken')->plainTextToken;
+
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->intended(RouteServiceProvider::HOME)->withCookie(cookie('apiToken', $token, 60*2, null, null, false, false));
+    }
+
+    public function apiLogin(LoginRequest $request)
+    {
+        if(!Auth::attempt($request->only(['email','password']))){
+        return response(["msg"=>"Bad Credential"]);
+    }
+    $token =  Auth::user()->createToken($request->get('email'))->plainTextToken;
+    $cookie = cookie('token',$token,60*24); // 用 cookie 带到客户端
+    return response(['token'=>$token])->withCookie($cookie); 
     }
 
     /**
@@ -42,6 +55,8 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $request->user()->tokens()->delete();
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
