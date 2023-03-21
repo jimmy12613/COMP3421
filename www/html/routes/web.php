@@ -37,7 +37,7 @@ Route::get('/dashboard', function () {
 
 Route::middleware('admin')->group(function () {
     Route::get('/room', function () {
-        return Inertia::render('Admin/Search');
+        return Inertia::render('Room/Search');
     })->name('room.search');
 });
 

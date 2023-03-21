@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\c;
+use App\Models\Record;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -36,7 +36,7 @@ class RecordController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(c $c): Response
+    public function show(Record $record): Response
     {
         //
     }
@@ -44,7 +44,7 @@ class RecordController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(c $c): Response
+    public function edit(Record $record): Response
     {
         //
     }
@@ -52,7 +52,7 @@ class RecordController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, c $c): RedirectResponse
+    public function update(Request $request, Record $record): RedirectResponse
     {
         //
     }
@@ -60,7 +60,7 @@ class RecordController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(c $c): RedirectResponse
+    public function destroy(Record $record): RedirectResponse
     {
         //
     }

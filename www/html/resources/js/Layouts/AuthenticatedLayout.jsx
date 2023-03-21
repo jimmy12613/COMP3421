@@ -28,7 +28,7 @@ export default function Authenticated({ auth, header, children }) {
                 href={route("room.search")}
                 active={route().current("room.search")}
             >
-                Admin
+                Room
             </NavLink>
         ;
     }
@@ -52,18 +52,6 @@ export default function Authenticated({ auth, header, children }) {
                                 >
                                     Dashboard
                                 </NavLink>
-                                <NavLink
-                                // href={route("profile.edit")}
-                                // active={route().current("profile.edit")}
-                                >
-                                    Report
-                                </NavLink>
-                                {/* <NavLink
-                                    href={route("room.search")}
-                                    active={route().current("room.search")}
-                                >
-                                    Admin
-                                </NavLink> */}
                                 {adminTab}
                             </div>
                         </div>
