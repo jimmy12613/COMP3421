@@ -30,9 +30,18 @@ class RecordController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): Response
     {
-        //
+        $records = DB::table('records')->get();
+        foreach ($records as $x) {
+            if ($x->roomId == $request->roomId) {
+                if (($request->timeFrom >= $x->timeFrom) && ($request->timeFrom < $x->timeTo) || ($request->timeTo > $x->timeFrom) && ($request->timeTo <= $x->timeTo)) {
+                    return response([ 'error' => 'Time Conflict'], Response::HTTP_CONFLICT);    //??
+                }
+            }
+        }
+        $record = Record::create($request->all());
+        return response([ 'success' => $record->id], Response::HTTP_CREATED);
     }
 
     /**
