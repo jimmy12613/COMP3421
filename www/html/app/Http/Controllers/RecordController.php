@@ -6,6 +6,7 @@ use App\Models\Record;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 
 class RecordController extends Controller
 {
@@ -14,7 +15,8 @@ class RecordController extends Controller
      */
     public function index(): Response
     {
-        //
+        $record = DB::table('records')->get();
+        return response($record, Response::HTTP_OK);
     }
 
     /**
@@ -38,7 +40,8 @@ class RecordController extends Controller
      */
     public function show(Record $record): Response
     {
-        //
+        $record = Record::findOrFail($record->id);
+        return response($record, Response::HTTP_OK);
     }
 
     /**
@@ -60,8 +63,9 @@ class RecordController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Record $record): RedirectResponse
+    public function destroy(Record $record): Response
     {
-        //
+        $record->delete();
+        return response([ 'success' => 'Record deleted'], Response::HTTP_OK);
     }
 }
