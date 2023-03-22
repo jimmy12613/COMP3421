@@ -44,7 +44,8 @@ Route::middleware('admin')->group(function () {
     })->name('room.search');
     Route::get('/room/{id}', function () {
         return Inertia::render('Room/Detail', [
-            'id' => request()->id
+            'id' => request()->id,
+            'roomDataSrc' => DB::table('rooms')->where('id', request()->id)->get(),
         ]);
     })->name('room.detail');
 });
