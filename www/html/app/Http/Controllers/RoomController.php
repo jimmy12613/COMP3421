@@ -23,6 +23,20 @@ class RoomController extends Controller
         return response($room, Response::HTTP_OK);
     }
 
+    public function search(Request $request): Response
+    {
+        // dd($request->all());
+        // search room by criteria
+        $room = DB::table('rooms')->where([
+            ['name', 'like', '%' . request('name') . '%'],
+            ['capacity', '>=', request('capacity') ?: 0],
+            ['num_computers', '>=', request('num_computers') ?: 0],
+            ['num_projectors', '>=', request('num_projectors') ?: 0],
+            ['num_microphones', '>=', request('num_microphones') ?: 0]
+        ])->get();
+        return response($room, Response::HTTP_OK);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -70,7 +84,6 @@ class RoomController extends Controller
      */
     public function update(Request $request, Room $room): Response
     {
-        // dd($room);
         try {
             $room->update($request->all());
             return response($room, Response::HTTP_OK);

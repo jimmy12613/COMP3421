@@ -5,8 +5,7 @@ import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link } from "@inertiajs/react";
 // ajax call example.
-// import axios from "axios";
-
+// var myVar;
 // axios
 //     .get("/api/room")
 //     .then((response) => {

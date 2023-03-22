@@ -23,5 +23,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::apiResource('room', RoomController::class);
 });
 Route::post('apiLogin', [AuthenticatedSessionController::class, 'apiLogin']);
+
 Route::apiResource('room', RoomController::class);
+Route::post('room/search', [RoomController::class, 'search'])->name('room.searchList');
+
 Route::apiResource('record', RecordController::class);

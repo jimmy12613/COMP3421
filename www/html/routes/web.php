@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,8 +38,15 @@ Route::get('/dashboard', function () {
 
 Route::middleware('admin')->group(function () {
     Route::get('/room', function () {
-        return Inertia::render('Room/Search');
+        return Inertia::render('Room/Search', [
+            'roomDataSrc' => DB::table('rooms')->get(),
+        ]);
     })->name('room.search');
+    Route::get('/room/{id}', function () {
+        return Inertia::render('Room/Detail', [
+            'id' => request()->id
+        ]);
+    })->name('room.detail');
 });
 
 // 這定義了一組僅供經過身份驗證的用戶訪問的路由/profile。
