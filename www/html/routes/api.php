@@ -24,7 +24,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::post('apiLogin', [AuthenticatedSessionController::class, 'apiLogin']);
 
+
+// dev
 Route::apiResource('room', RoomController::class);
 Route::post('room/search', [RoomController::class, 'search'])->name('room.searchList');
-
 Route::apiResource('record', RecordController::class);
+Route::get('getActiveRecords', [RecordController::class, 'getActiveRecords'])->name('record.getActiveRecords');
+// dev
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiResource('room', RoomController::class);
+    Route::post('room/search', [RoomController::class, 'search'])->name('room.searchList');
+
+    Route::apiResource('record', RecordController::class);
+
+    Route::get('getActiveRecords', [RecordController::class, 'getActiveRecords'])->name('record.getActiveRecords');
+    Route::get('getAllRecords', [RecordController::class, 'getAllRecords'])->name('record.getAllRecords');
+    Route::get('getActiveWaitList', [RecordController::class, 'getActiveWaitList'])->name('record.getActiveWaitList');
+    Route::get('getAllWaitList', [RecordController::class, 'getAllWaitList'])->name('record.getAllWaitList');
+});

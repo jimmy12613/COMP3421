@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use Termwind\Components\Dd;
 
 class RecordController extends Controller
 {
@@ -86,5 +87,43 @@ class RecordController extends Controller
     {
         $record->delete();
         return response([ 'success' => 'Record deleted'], Response::HTTP_OK);
+    }
+
+    public function getActiveRecords(): Response
+    {
+        $records = DB::table('records')->where([
+            ['userId', '=', auth()->user()->userId],
+            ['timeTo', '>', now()],
+            ['status', '=', 0]
+        ])->get();
+        return response($records, Response::HTTP_OK);
+    }
+
+    public function getAllRecords(): Response
+    {
+        $records = DB::table('records')->where([
+            ['userId', '=', auth()->user()->userId],
+            ['status', '=', 0]
+        ])->get();
+        return response($records, Response::HTTP_OK);
+    }
+
+    public function getActiveWaitList(): Response
+    {
+        $records = DB::table('records')->where([
+            ['userId', '=', auth()->user()->userId],
+            ['timeTo', '>', now()],
+            ['status', '>', 0]
+        ])->get();
+        return response($records, Response::HTTP_OK);
+    }
+
+    public function getAllWaitList(): Response
+    {
+        $records = DB::table('records')->where([
+            ['userId', '=', auth()->user()->userId],
+            ['status', '>', 0]
+        ])->get();
+        return response($records, Response::HTTP_OK);
     }
 }
