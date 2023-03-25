@@ -40,8 +40,18 @@ class RecordController extends Controller
                 }
             }
         }
-        $record = Record::create($request->all());
-        return response([ 'success' => $record->id], Response::HTTP_CREATED);
+        try {
+            $record = Record::create($request->all());
+            return response([ 'success' => $record->id], Response::HTTP_CREATED);
+        } catch (\Throwable $e) {
+            // dd($e->errorInfo);
+            $errorCode = $e->errorInfo[1];
+            $errorMessage = $e->errorInfo[2];
+            if (str_contains($errorMessage, "numOfPeople") && str_contains($errorMessage, "Out of range")) {
+                return response(['error' => 'Number of people must larger than 0'], Response::HTTP_CONFLICT);
+            }
+            return response([ 'error' => $errorMessage], Response::HTTP_CONFLICT);
+        }
     }
 
     /**

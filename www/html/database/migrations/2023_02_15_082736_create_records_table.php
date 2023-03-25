@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id('id');
             $table->unsignedBigInteger('userId');
             $table->unsignedBigInteger('roomId');
-            $table->integer('numOfPeople');
+            $table->integer('numOfPeople', false, true);
             $table->timestamp('timeFrom');
             $table->timestamp('timeTo');
-            $table->string('status')->default('ongoing');
+            $table->integer('status')->default(0);
             //ongoing, completed, cancelled
             $table->timestamps();
             // $table->foreign('userId')->references('userId')->on('users');

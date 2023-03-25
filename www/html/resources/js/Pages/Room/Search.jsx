@@ -2,7 +2,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import PrimaryButton from "@/Components/PrimaryButton";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { Head, useForm } from "@inertiajs/react";
 import MaterialReactTable from "material-react-table";
 import { createTheme, useTheme } from "@mui/material/styles";
