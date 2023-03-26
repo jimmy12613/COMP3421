@@ -19,7 +19,10 @@ class AdminAuthorize
     public function handle(Request $request, Closure $next): Response
     {   
         // if(false){
-        if (auth()->user()->isAdmin==1) {
+        if (!Auth::check()) {
+            return redirect(RouteServiceProvider::HOME);
+        }
+        if (Auth::user()->isAdmin == 1) {
             return $next($request);
         }
         return $next($request);
