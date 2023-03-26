@@ -43,6 +43,9 @@ Route::middleware('admin')->group(function () {
         ]);
     })->name('room.search');
     Route::get('/room/{id}', function () {
+        if (gettype(request()->id) != 'integer') {
+            return redirect()->route('room.search');
+        }
         return Inertia::render('Room/Detail', [
             'id' => request()->id,
             'roomDataSrc' => DB::table('rooms')->where('id', request()->id)->get(),

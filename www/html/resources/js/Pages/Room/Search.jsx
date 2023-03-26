@@ -7,6 +7,8 @@ import { Head, useForm } from "@inertiajs/react";
 import MaterialReactTable from "material-react-table";
 import { createTheme, useTheme } from "@mui/material/styles";
 import { MenuItem } from "@mui/material";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
 export default function Search(props) {
     const { data, setData, post, processing, recentlySuccessful } = useForm({
@@ -266,57 +268,61 @@ export default function Search(props) {
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <h2 className="text-xl font-semibold">Result</h2>
                             <div id="grid" className="p-4">
-                                <MaterialReactTable
-                                    theme={darkTheme}
-                                    className="dark:bg-gray-800"
-                                    columns={roomColumns}
-                                    data={memRoomDataSrc}
-                                    initialState={{
-                                        showColumnFilters: true,
-                                        density: "compact",
-                                        sorting: [
-                                            {
-                                                id: "name", //sort by age by default on page load
-                                                desc: false,
+                                <ThemeProvider theme={darkTheme}>
+                                    <CssBaseline />
+                                    <MaterialReactTable
+                                        theme={darkTheme}
+                                        className="dark:bg-gray-800"
+                                        columns={roomColumns}
+                                        data={memRoomDataSrc}
+                                        initialState={{
+                                            showColumnFilters: true,
+                                            density: "compact",
+                                            sorting: [
+                                                {
+                                                    id: "name", //sort by age by default on page load
+                                                    desc: false,
+                                                },
+                                            ],
+                                        }}
+                                        muiTableProps={{
+                                            sx: {
+                                                tableLayout: "auto",
                                             },
-                                        ],
-                                    }}
-                                    muiTableProps={{
-                                        sx: {
-                                            tableLayout: "auto",
-                                        },
-                                    }}
-                                    enableColumnResizing
-                                    enableRowActions
-                                    renderRowActionMenuItems={({
-                                        row,
-                                        closeMenu,
-                                    }) => [
-                                        <MenuItem
-                                            key={0}
-                                            onClick={() => {
-                                                window.location.href = route(
-                                                    "room.detail",
-                                                    row.original.roomId
-                                                );
-                                                closeMenu();
-                                            }}
-                                            sx={{ m: 0 }}
-                                        >
-                                            Detail
-                                        </MenuItem>,
-                                        <MenuItem
-                                            key={1}
-                                            onClick={() => {
-                                                // TODO: Delete logic...
-                                                closeMenu();
-                                            }}
-                                            sx={{ m: 0 }}
-                                        >
-                                            Delete
-                                        </MenuItem>,
-                                    ]}
-                                />
+                                        }}
+                                        enableColumnResizing
+                                        enableRowActions
+                                        renderRowActionMenuItems={({
+                                            row,
+                                            closeMenu,
+                                        }) => [
+                                            <MenuItem
+                                                key={0}
+                                                onClick={() => {
+                                                    window.location.href =
+                                                        route(
+                                                            "room.detail",
+                                                            row.original.roomId
+                                                        );
+                                                    closeMenu();
+                                                }}
+                                                sx={{ m: 0 }}
+                                            >
+                                                Detail
+                                            </MenuItem>,
+                                            <MenuItem
+                                                key={1}
+                                                onClick={() => {
+                                                    // TODO: Delete logic...
+                                                    closeMenu();
+                                                }}
+                                                sx={{ m: 0 }}
+                                            >
+                                                Delete
+                                            </MenuItem>,
+                                        ]}
+                                    />
+                                </ThemeProvider>
                             </div>
                         </div>
                     </div>
