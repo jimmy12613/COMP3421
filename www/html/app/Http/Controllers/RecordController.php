@@ -75,9 +75,14 @@ class RecordController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Record $record): RedirectResponse
+    public function update(Request $request, Record $record): Response
     {
-        //
+        try {
+            $record->update($request->all());
+            return response($record, Response::HTTP_OK);
+        } catch (\Throwable $e) {
+            return response([ 'error' => 'Something went wrong'], Response::HTTP_BAD_REQUEST);
+        }
     }
 
     /**
