@@ -16,5 +16,6 @@ class Record extends Model
         'numOfPeople',
         'timeFrom',
         'timeTo',
+        'status',
     ];
 }
