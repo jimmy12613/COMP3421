@@ -34,16 +34,13 @@ class RecordController extends Controller
     public function store(Request $request): Response
     {
         // $records = DB::table('records')->where([['roomId', '=', $request->roomId]])->get();
+        $id = DB::select('select MAX(id) as id from records');
+        $id = $id[0]->id + 1;
         $records = DB::select('select * from records where roomId = :roomId and status >= 0 order by created_at', ['roomId' => $request->roomId]);
-        $rooms = DB::table('rooms')->where([['roomId', '=', $request->roomId]])->get();
+        $rooms = DB::select('select capacity from rooms where roomId = ?', [$request->roomId]);
+        DB::table('rooms')->where([['roomId', '=', $request->roomId]])->get();
         $conflictRecord = null;
         $maxWaiting = 0;
-
-        foreach ($rooms as $x) {
-            if ($request->numOfPeople > $x->capacity){
-                return response([ 'error' => 'Number of people exceed capacity of room'], Response::HTTP_CONFLICT);
-            }
-        }
 
         foreach ($records as $x) {
             if ($this->checkConflictTime($request, $x) && $x->status ==0) {
@@ -64,8 +61,8 @@ class RecordController extends Controller
 
         try {
             DB::insert('insert into records (id, userId, roomId, numOfPeople, timeFrom, timeTo, status, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-                        [$request->id, $request->userId, $request->roomId, $request->numOfPeople, $request->timeFrom, $request->timeTo, $request->status, NOW(), NOW()]);
-            return response([ 'success' => $request->id], Response::HTTP_CREATED);
+                        [$id, $request->userId, $request->roomId, $rooms[0]->capacity, $request->timeFrom, $request->timeTo, $request->status, NOW(), NOW()]);
+            return response([ 'success' => $id], Response::HTTP_CREATED);
         } catch (\Throwable $e) {
             // dd($e->errorInfo);
             $errorCode = $e->errorInfo[1];
