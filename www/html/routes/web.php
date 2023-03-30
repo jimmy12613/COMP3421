@@ -43,13 +43,15 @@ Route::middleware('admin')->group(function () {
         ]);
     })->name('room.search');
     Route::get('/room/{id}', function () {
-        if (gettype(request()->id) != 'integer') {
+        try {
+            return Inertia::render('Room/Detail', [
+                'id' => request()->id,
+                'roomDataSrc' => DB::table('rooms')->where('roomId', request()->id)->get(),
+            ]);
+        } catch (\Throwable $th) {
             return redirect()->route('room.search');
         }
-        return Inertia::render('Room/Detail', [
-            'id' => request()->id,
-            'roomDataSrc' => DB::table('rooms')->where('id', request()->id)->get(),
-        ]);
+        
     })->name('room.detail');
 });
 
@@ -63,6 +65,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/booking', function () {
+        return Inertia::render('Booking/Search', [
+            'roomDataSrc' => DB::table('rooms')->get(),
+        ]);
+    })->name('booking.search');
 });
 
 require __DIR__.'/auth.php';

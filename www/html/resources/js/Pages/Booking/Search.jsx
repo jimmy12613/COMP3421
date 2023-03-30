@@ -8,9 +8,17 @@ import MaterialReactTable from "material-react-table";
 import { MenuItem } from "@mui/material";
 import { useTheme, ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import { Box, IconButton } from '@mui/material';
+
+import { Add } from "@mui/icons-material";
+
 
 export default function Search(props) {
-    console.log(props)
+    const [roomAll, setRoomAll] = useState(props.roomDataSrc);
+    const [roomBest, setRoomBest] = useState(props.roomDataSrc);
+    const memRoomAll = useMemo(() => roomAll, [roomAll]);
+    const memRoomBest = useMemo(() => roomBest, [roomBest]);
+
     const { data, setData, post, processing, recentlySuccessful } = useForm({
         name: "",
         capacity: "",
@@ -24,7 +32,7 @@ export default function Search(props) {
         axios
             .post(route("room.searchList"), data)
             .then((response) => {
-                setRoomDataSrc(response.data);
+                setRoomAll(response.data);    // Set data here
             })
             .catch((error) => {
                 console.log(error);
@@ -105,10 +113,8 @@ export default function Search(props) {
         []
     );
 
-    const [roomDataSrc, setRoomDataSrc] = useState(props.roomDataSrc);
-    const memRoomDataSrc = useMemo(() => roomDataSrc, [roomDataSrc]);
-
-    //console.log(memRoomDataSrc);
+    console.log(props)
+    // console.log(memRoomDataSrc);
     //console.log(roomColumns);
 
     return (
@@ -117,18 +123,18 @@ export default function Search(props) {
             errors={props.errors}
             header={
                 <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                    Room
+                    Booking
                 </h2>
             }
         >
-            <Head title="Room" />
+            <Head title="Booking" />
 
             <div className="pt-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <h2 className="text-xl font-semibold">
-                                Search Criteria
+                                Room Criteria
                             </h2>
                             <div className="p-4">
                                 <form onSubmit={submit} className="space-y-6">
@@ -238,17 +244,6 @@ export default function Search(props) {
                                         <PrimaryButton processing={processing}>
                                             Search
                                         </PrimaryButton>
-                                        <PrimaryButton
-                                            type="button"
-                                            onClick={() =>
-                                                (window.location.href = route(
-                                                    "room.detail",
-                                                    -1
-                                                ))
-                                            }
-                                        >
-                                            Create
-                                        </PrimaryButton>
                                     </div>
                                 </form>
                             </div>
@@ -256,22 +251,25 @@ export default function Search(props) {
                     </div>
                 </div>
             </div>
-            <div className="py-12">
+
+            <div className="pt-12 pl-12 pr-12" style={{"display": "none"}}>
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h2 className="text-xl font-semibold">Result</h2>
+                            <h2 className="text-xl font-semibold">Best Match</h2>
                             <div id="grid" className="p-4">
                                     <CssBaseline />
                                     <MaterialReactTable
                                         columns={roomColumns}
-                                        data={memRoomDataSrc}
+                                        data={memRoomAll}
+                                        enableRowActions
+                                        enableColumnResizing
                                         initialState={{
                                             showColumnFilters: true,
                                             density: "compact",
                                             sorting: [
                                                 {
-                                                    id: "name", //sort by age by default on page load
+                                                    id: "name", //sort by name by default on page load
                                                     desc: false,
                                                 },
                                             ],
@@ -281,37 +279,58 @@ export default function Search(props) {
                                                 tableLayout: "auto",
                                             },
                                         }}
-                                        enableColumnResizing
+                                        
+                                        renderRowActions={({ row, table }) => (
+                                              <IconButton
+                                                color="black"
+                                              >
+                                                <Add />
+                                              </IconButton>
+                                          )}
+                                    />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div className="py-12">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                        <div className="p-6 text-gray-900 dark:text-gray-100">
+                            <h2 className="text-xl font-semibold">All Matches</h2>
+                            <div id="grid" className="p-4">
+                                    <CssBaseline />
+                                    <MaterialReactTable
+                                        columns={roomColumns}
+                                        data={memRoomAll}
                                         enableRowActions
-                                        renderRowActionMenuItems={({
-                                            row,
-                                            closeMenu,
-                                        }) => [
-                                            <MenuItem
-                                                key={0}
-                                                onClick={() => {
-                                                    window.location.href =
-                                                        route(
-                                                            "room.detail",
-                                                            row.original.roomId
-                                                        );
-                                                    closeMenu();
-                                                }}
-                                                sx={{ m: 0 }}
-                                            >
-                                                Detail
-                                            </MenuItem>,
-                                            <MenuItem
-                                                key={1}
-                                                onClick={() => {
-                                                    // TODO: Delete logic...
-                                                    closeMenu();
-                                                }}
-                                                sx={{ m: 0 }}
-                                            >
-                                                Delete
-                                            </MenuItem>,
-                                        ]}
+                                        enableColumnResizing
+                                        initialState={{
+                                            showColumnFilters: true,
+                                            density: "compact",
+                                            sorting: [
+                                                {
+                                                    id: "name", //sort by name by default on page load
+                                                    desc: false,
+                                                },
+                                            ],
+                                        }}
+                                        muiTableProps={{
+                                            sx: {
+                                                tableLayout: "auto",
+                                            },
+                                        }}
+                                        
+                                        renderRowActions={({ row, table }) => (
+                                              <IconButton
+                                                color="black"
+                                                onClick={() => {console.log(row.original.roomId)}}
+                                              >
+                                                <Add />
+                                              </IconButton>
+                                          )}
                                     />
                             </div>
                         </div>
@@ -321,3 +340,4 @@ export default function Search(props) {
         </AuthenticatedLayout>
     );
 }
+

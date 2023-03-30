@@ -5,7 +5,7 @@ import TextInput from "@/Components/TextInput";
 import { useState } from "react";
 import { Head, useForm } from "@inertiajs/react";
 
-export default function Search(props) {
+export default function Detail(props) {
     console.log(props);
     const { data, setData, post, processing, recentlySuccessful } = useForm({
         name: "",
