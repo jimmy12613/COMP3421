@@ -5,30 +5,56 @@ import TextInput from "@/Components/TextInput";
 import { useState, useMemo } from "react";
 import { Head, useForm } from "@inertiajs/react";
 import MaterialReactTable from "material-react-table";
-import { MenuItem } from "@mui/material";
+import { Dialog } from "@mui/material";
 import { useTheme, ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { Box, IconButton } from '@mui/material';
 
-import { Add } from "@mui/icons-material";
+import { Add, Create } from "@mui/icons-material";
 
 
 export default function Search(props) {
     const [roomAll, setRoomAll] = useState(props.roomDataSrc);
     const [roomBest, setRoomBest] = useState(props.roomDataSrc);
+    const [currentRoom, setCurrentRoom] = useState("");
+    //const [roomBest, setRoomBest] = useState(props.roomDataSrc);
     const memRoomAll = useMemo(() => roomAll, [roomAll]);
     const memRoomBest = useMemo(() => roomBest, [roomBest]);
+    const [showDialog, setShowDialog] = useState(false);
+    const [start, setStart] = useState("");
+    const [end, setEnd] = useState("");
+
 
     const { data, setData, post, processing, recentlySuccessful } = useForm({
         name: "",
-        capacity: "",
-        num_computers: "",
-        num_projectors: "",
-        num_microphones: "",
+        capacity: "1",
+        num_computers: "1",
+        num_projectors: "1",
+        num_microphones: "1",
     });
 
     const submit = (e) => {
         e.preventDefault();
+        //console.log(data)
+        axios
+            .post(route("room.searchList"), data)
+            .then((response) => {
+                setRoomAll(response.data);    // Set data here
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const create = (e) => {
+        e.preventDefault();
+        if (start === "" || end === "") {
+            window.alert("Please choose time!");
+            return;
+        } else if (start >= end) {
+            window.alert("Invalid time!");
+            return;
+        }
         axios
             .post(route("room.searchList"), data)
             .then((response) => {
@@ -113,7 +139,7 @@ export default function Search(props) {
         []
     );
 
-    console.log(props)
+    //console.log(props)
     // console.log(memRoomDataSrc);
     //console.log(roomColumns);
 
@@ -252,48 +278,47 @@ export default function Search(props) {
                 </div>
             </div>
 
-            <div className="pt-12 pl-12 pr-12" style={{"display": "none"}}>
+            <div className="pt-12 pl-12 pr-12" style={{ "display": "none" }}>
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <h2 className="text-xl font-semibold">Best Match</h2>
                             <div id="grid" className="p-4">
-                                    <CssBaseline />
-                                    <MaterialReactTable
-                                        columns={roomColumns}
-                                        data={memRoomAll}
-                                        enableRowActions
-                                        enableColumnResizing
-                                        initialState={{
-                                            showColumnFilters: true,
-                                            density: "compact",
-                                            sorting: [
-                                                {
-                                                    id: "name", //sort by name by default on page load
-                                                    desc: false,
-                                                },
-                                            ],
-                                        }}
-                                        muiTableProps={{
-                                            sx: {
-                                                tableLayout: "auto",
+                                <CssBaseline />
+                                <MaterialReactTable
+                                    columns={roomColumns}
+                                    data={memRoomAll}
+                                    enableRowActions
+                                    enableColumnResizing
+                                    initialState={{
+                                        showColumnFilters: true,
+                                        density: "compact",
+                                        sorting: [
+                                            {
+                                                id: "name", //sort by name by default on page load
+                                                desc: false,
                                             },
-                                        }}
-                                        
-                                        renderRowActions={({ row, table }) => (
-                                              <IconButton
-                                                color="black"
-                                              >
-                                                <Add />
-                                              </IconButton>
-                                          )}
-                                    />
+                                        ],
+                                    }}
+                                    muiTableProps={{
+                                        sx: {
+                                            tableLayout: "auto",
+                                        },
+                                    }}
+
+                                    renderRowActions={({ row, table }) => (
+                                        <IconButton
+                                            color="black"
+                                        >
+                                            <Add />
+                                        </IconButton>
+                                    )}
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -301,43 +326,112 @@ export default function Search(props) {
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <h2 className="text-xl font-semibold">All Matches</h2>
                             <div id="grid" className="p-4">
-                                    <CssBaseline />
-                                    <MaterialReactTable
-                                        columns={roomColumns}
-                                        data={memRoomAll}
-                                        enableRowActions
-                                        enableColumnResizing
-                                        initialState={{
-                                            showColumnFilters: true,
-                                            density: "compact",
-                                            sorting: [
-                                                {
-                                                    id: "name", //sort by name by default on page load
-                                                    desc: false,
-                                                },
-                                            ],
-                                        }}
-                                        muiTableProps={{
-                                            sx: {
-                                                tableLayout: "auto",
+                                <CssBaseline />
+                                <MaterialReactTable
+                                    columns={roomColumns}
+                                    data={memRoomAll}
+                                    enableRowActions
+                                    enableColumnResizing
+                                    initialState={{
+                                        showColumnFilters: true,
+                                        density: "compact",
+                                        sorting: [
+                                            {
+                                                id: "name", //sort by name by default on page load
+                                                desc: false,
                                             },
-                                        }}
-                                        
-                                        renderRowActions={({ row, table }) => (
-                                              <IconButton
-                                                color="black"
-                                                onClick={() => {console.log(row.original.roomId)}}
-                                              >
-                                                <Add />
-                                              </IconButton>
-                                          )}
-                                    />
+                                        ],
+                                    }}
+                                    muiTableProps={{
+                                        sx: {
+                                            tableLayout: "auto",
+                                        },
+                                    }}
+
+                                    renderRowActions={({ row, table }) => (
+                                        <IconButton
+                                            color="black"
+                                            onClick={() => {
+                                                setCurrentRoom(row.original);
+                                                console.log(row.original);
+                                                setShowDialog(true);
+                                            }}
+                                        >
+                                            <Add />
+                                        </IconButton>
+                                    )}
+                                />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+
+            <Dialog onClose={() => setShowDialog(false)} open={showDialog} fullWidth={true}>
+                <div style={{ padding: 25 }}>
+                    <h3 className="text-2xl text-center font-medium mb-5">Select Time</h3>
+                    <h3 className="text-xl font-medium mb-3">{currentRoom.name}</h3>
+                    <InputLabel
+                        for="start"
+                        value="Start time"
+                        className="text-lg"
+                    />
+                    <TextInput
+                        id="start"
+                        type="datetime-local"
+                        className="mt-1 mb-3 w-full"
+                        handleChange={(e) => {
+                            console.log(e.target.value);
+                            setStart(e.target.value);
+                        }}
+                        isFocused
+                    />
+
+                    <InputLabel
+                        for="end"
+                        value="End time"
+                        className="text-lg"
+                    />
+                    <TextInput
+                        id="end"
+                        type="datetime-local"
+                        className="mt-1 mb-0 w-full"
+                        handleChange={(e) => {
+                            console.log(e.target.value);
+                            setEnd(e.target.value);
+                        }}
+                        isFocused
+                    />
+                </div>
+                <div style={{ display: 'flex', paddingRight: 25, paddingBottom: 25, justifyContent: 'right' }}>
+                    <button onClick={() => setShowDialog(false)} className="mr-4 px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                        Cancel
+                    </button>
+                    <button onClick={(e) => create(e)} className="px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                        Confirm
+                    </button>
+                </div>
+            </Dialog>
+
+        </AuthenticatedLayout >
     );
 }
 
+/*
+<label htmlFor={"start"} className={`inline font-medium text-md text-gray-700 dark:text-gray-300 `}>
+                    Start Time
+                </label>
+                <TextInput
+                    id="start"
+                    type="datetime-local"
+                    className="mt-1 inline "
+                    value={data.name}
+                    handleChange={(e) =>
+                        setData(
+                            "name",
+                            e.target.value
+                        )
+                    }
+                    isFocused
+                />
+                */
