@@ -50,20 +50,20 @@ export default function Detail(props) {
             console.log(data);
             console.log(props.roomDataSrc[0])
             axios
-                .post(route("room.update"), data, props.roomDataSrc[0])
+                .patch(route("room.update", {id: props.id}), data)
                 .then((response) => {
-                    console.log(response.data);
+                    console.log(response);
                     if (response.data.error) {
                         window.alert("Error, please contact admin.");
                     } else {
                         window.alert("Room successfully updated.");
                     }
-                    window.location.href = route("room.search");
+                    // window.location.href = route("room.search");
                 })
                 .catch((error) => {
                     console.log(error);
                     window.alert("Error, please contact admin.");
-                    window.location.href = route("room.search");
+                    // window.location.href = route("room.search");
                 });
         }
         
