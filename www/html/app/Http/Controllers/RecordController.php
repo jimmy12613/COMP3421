@@ -198,6 +198,6 @@ class RecordController extends Controller
 }
 
 /*
-new: 1730 - 1830
-current: 1730 - 1830 // 1630-
+new
+current
 */
