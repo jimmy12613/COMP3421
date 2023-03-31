@@ -76,19 +76,21 @@ export default function Search(props) {
             'roomId': currentRoom.roomId,
             'timeFrom': start,
             'timeTo': end,
+            'status': 0,
         }
         
         axios
             .post(route("record.store"), insertData)
             .then((response) => {
+                console.log(response.data);    // Set data here
                 if (response.data.success) {
                     setShowDialog(false);
                     window.alert("Booking confirmed! Your booking ID is " + response.data.success)
                 } else {
                     setShowDialog(false);
-                    window.alert("Error " + response.data.success)
+                    window.alert("Errorrrrr ")
                 }
-                console.log(response.data.success);    // Set data here
+                console.log(response.data);    // Set data here
             })
             .catch((error) => {
                 console.log(error);
