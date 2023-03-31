@@ -320,7 +320,7 @@ export default function Search(props) {
                             <h2 className="text-xl font-semibold">
                                 Best Match
                             </h2>
-                            <p id="init" className="pl-6 text-lg text-gray-900 dark:text-gray-100">
+                            <p id="init" className="pl-6 mb-8 text-lg text-gray-900 dark:text-gray-100">
                                 Best match will show after search
                             </p>
                             <div
