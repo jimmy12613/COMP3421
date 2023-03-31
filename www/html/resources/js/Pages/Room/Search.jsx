@@ -5,12 +5,16 @@ import TextInput from "@/Components/TextInput";
 import { useState, useMemo } from "react";
 import { Head, useForm } from "@inertiajs/react";
 import MaterialReactTable from "material-react-table";
-import { MenuItem } from "@mui/material";
+import { MenuItem, Dialog } from "@mui/material";
 import { useTheme, ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
+
 export default function Search(props) {
     console.log(props)
+
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [currentRoom, setCurrentRoom] = useState("");
     const { data, setData, post, processing, recentlySuccessful } = useForm({
         name: "",
         capacity: "",
@@ -30,6 +34,19 @@ export default function Search(props) {
                 console.log(error);
             });
     };
+
+    const remove = (e) => {
+        e.preventDefault();
+        axios
+            .post(route("room.destroy"), currentRoom)
+            .then((response) => {
+                setShowDeleteDialog(false);
+                window.alert("Room successfully deleted.");
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
 
     const roomColumns = useMemo(
         () => [
@@ -304,7 +321,11 @@ export default function Search(props) {
                                             <MenuItem
                                                 key={1}
                                                 onClick={() => {
-                                                    // TODO: Delete logic...
+                                                    console.log(typeof(row.original));
+                                                    console.log(row.original);
+                                                    setCurrentRoom(row.original);
+                                                    setShowDeleteDialog(true);
+                                                    
                                                     closeMenu();
                                                 }}
                                                 sx={{ m: 0 }}
@@ -318,6 +339,44 @@ export default function Search(props) {
                     </div>
                 </div>
             </div>
+
+
+            <Dialog
+                onClose={() => setShowDeleteDialog(false)}
+                open={showDeleteDialog}
+                fullWidth={true}
+            >
+                <div style={{ padding: 25 }}>
+                    <h3 className="text-2xl text-center font-medium mb-5">
+                        Delete Room
+                    </h3>
+                    <h3 className="text-xl font-medium mb-3">
+                        {"Are you sure you want to delete room " + currentRoom.name + "?"}
+                    </h3>
+                    
+                </div>
+                <div
+                    style={{
+                        display: "flex",
+                        paddingRight: 25,
+                        paddingBottom: 25,
+                        justifyContent: "right",
+                    }}
+                >
+                    <button
+                        onClick={() => setShowDialog(false)}
+                        className="mr-4 px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        onClick={(e) => remove(e)}
+                        className="px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                    >
+                        Confirm
+                    </button>
+                </div>
+            </Dialog>
         </AuthenticatedLayout>
     );
 }

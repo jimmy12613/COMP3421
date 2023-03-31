@@ -84,17 +84,25 @@ export default function Search(props) {
             .then((response) => {
                 console.log(response.data);    // Set data here
                 if (response.data.success) {
-                    setShowDialog(false);
-                    window.alert("Booking confirmed! Your booking ID is " + response.data.success);
+                    if (response.data.waitList) {
+                        setShowDialog(false);
+                        window.alert("There are someone booked the room with overlapping timeslot! You have been automatically placed at the end of waitlist.\n" + 
+                                       "Your booking ID is " + response.data.success + ", and your waitlist position is " + response.data.waitList + ".");
+                    } else {
+                        setShowDialog(false);
+                        window.alert("Booking confirmed! Your booking ID is " + response.data.success + ".");
+                    }
+                    
                 } else {
                     setShowDialog(false);
-                    window.alert("Errorrrrr ");
+                    window.alert("Error, please contact admin.");
                 }
                 // console.log(response.data.success);
-                console.log(response.data);    // Set data here
             })
             .catch((error) => {
                 console.log(error);
+                setShowDialog(false);
+                window.alert("Error, please contact admin.");
             });
     };
 
@@ -502,7 +510,7 @@ export default function Search(props) {
                                         <div style={{ "display": "flex", "justifyContent": "center" }}>
                                             <button onClick={() => {
                                                 setCurrentRoom(
-                                                    roomBest
+                                                    row.original
                                                 );
                                                 // console.log(roomBest[0]);
                                                 setShowDialog(true);
