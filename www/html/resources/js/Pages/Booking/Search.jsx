@@ -15,16 +15,13 @@ import { Add, Create } from "@mui/icons-material";
 
 export default function Search(props) {
     const [roomAll, setRoomAll] = useState(props.roomDataSrc);
-    const [roomBest, setRoomBest] = useState(props.roomDataSrc[0]);
+    const [roomBest, setRoomBest] = useState({});
     const [currentRoom, setCurrentRoom] = useState("");
     const memRoomAll = useMemo(() => roomAll, [roomAll]);
-    const memRoomBest = useMemo(() => roomBest, [roomBest]);
     const [showDialog, setShowDialog] = useState(false);
     const [start, setStart] = useState("");
     const [end, setEnd] = useState("");
 
-    console.log(props.auth.user.userId);
-    console.log(props);
     const { data, setData, post, processing, recentlySuccessful } = useForm({
         name: "",
         capacity: "",
@@ -35,30 +32,34 @@ export default function Search(props) {
 
     const submit = (e) => {
         e.preventDefault();
-        //console.log(data)
         axios
             .post(route("room.searchList"), data)
             .then((response) => {
-                setRoomBest(response.data[0]);    // Set data here
-                //setRoomAll(response.data[1]);    // Set data here
-                document.getElementById("best").style.display = "block";
+                setRoomAll(response.data);
             })
             .catch((error) => {
                 console.log(error);
             });
-        /*
-        axios
-            .post(route("record.searchList"), data)
-            .then((response) => {
-                setRoomBest(response.data[0]);    // Set data here
-                setRoomAll(response.data[1]);    // Set data here
-                document.getElementById("best").style.display = "block";
 
+        axios
+            .post(route("room.getBestMatch"), data)
+            .then((response) => {
+                if (response.data.length > 0) {
+                    setRoomBest(response.data[0]);
+                    document.getElementById("best").style.display = "block";
+                    document.getElementById("init").innerText = null;
+                } else {
+                    setRoomBest({});
+                    document.getElementById("best").style.display = "none";
+                    console.log("No data");
+                }
+                console.log(roomBest);
             })
             .catch((error) => {
                 console.log(error);
+                document.getElementById("init").innerText = "No best match found";
+                document.getElementById("best").style.display = "none";
             });
-        */
     };
 
     const create = (e) => {
@@ -88,7 +89,7 @@ export default function Search(props) {
                     setShowDialog(false);
                     window.alert("Error " + response.data.success)
                 }
-                console.log(response.data.success);    // Set data here
+                // console.log(response.data.success);
             })
             .catch((error) => {
                 console.log(error);
@@ -170,8 +171,8 @@ export default function Search(props) {
     );
 
     //console.log(props)
-    console.log(props.roomDataSrc);
-    console.log(roomBest);
+    // console.log(props.roomDataSrc);
+    console.log(roomBest.name);
     //console.log(roomColumns);
 
     return (
@@ -309,61 +310,172 @@ export default function Search(props) {
                 </div>
             </div>
 
-            <div className="pt-12 pl-12 pr-12" id="best" style={{"display": "none"}}>
+            <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h2 className="text-xl font-semibold">Best Match</h2>
-                            <div id="grid" className="p-4">
-                                <CssBaseline />
-                                <table style={{"columnWidth": "185px", "width": "100%", "boxShadow": "0px 0px 1px 0px #000000"}}>
+                            <h2 className="text-xl font-semibold">
+                                Best Match
+                            </h2>
+                            <p id="init" className="pl-6 text-lg text-gray-900 dark:text-gray-100">
+                                Best match will show after search
+                            </p>
+                            <div
+                                id="best"
+                                className="p-4"
+                                style={{ display: "none" }}
+                            >
+                                <table
+                                    style={{
+                                        columnWidth: "185px",
+                                        width: "100%",
+                                        boxShadow: "0px 0px 1px 0px #000000",
+                                    }}
+                                >
                                     <thead>
                                         <tr>
-                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>Action</th>
-                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>Room Name</th>
-                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>Room Location</th>
-                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>Room Capacity</th>
-                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>No. of computers</th>
-                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>No. of projectors</th>
-                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>No. of microphones</th>
+                                            <th
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingTop: 15,
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                Action
+                                            </th>
+                                            <th
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingTop: 15,
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                Room Name
+                                            </th>
+                                            <th
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingTop: 15,
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                Room Location
+                                            </th>
+                                            <th
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingTop: 15,
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                Room Capacity
+                                            </th>
+                                            <th
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingTop: 15,
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                No. of computers
+                                            </th>
+                                            <th
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingTop: 15,
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                No. of projectors
+                                            </th>
+                                            <th
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingTop: 15,
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                No. of microphones
+                                            </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td style={{"textAlign": "center", paddingBottom: 15}}>
+                                            <td
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
                                                 <IconButton
                                                     color="black"
                                                     onClick={() => {
-                                                        setCurrentRoom(roomBest);
-                                                        console.log(roomBest[0]);
+                                                        setCurrentRoom(
+                                                            roomBest
+                                                        );
+                                                        // console.log(roomBest[0]);
                                                         setShowDialog(true);
                                                     }}
                                                 >
                                                     <Add />
                                                 </IconButton>
                                             </td>
-                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.name}</td>
-                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.location}</td>
-                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.capacity}</td>
-                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.num_computers}</td>
-                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.num_projectors}</td>
-                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.num_microphones}</td>
+                                            <td
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                {roomBest.name}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                {roomBest.location}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                {roomBest.capacity}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                {roomBest.num_computers}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                {roomBest.num_projectors}
+                                            </td>
+                                            <td
+                                                style={{
+                                                    textAlign: "center",
+                                                    paddingBottom: 15,
+                                                }}
+                                            >
+                                                {roomBest.num_microphones}
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900 dark:text-gray-100">
-                            <h2 className="text-xl font-semibold">All Matches</h2>
+                            <h2 className="text-xl font-semibold">
+                                All Matches
+                            </h2>
                             <div id="grid" className="p-4">
-                                <CssBaseline />
                                 <MaterialReactTable
                                     columns={roomColumns}
                                     data={memRoomAll}
@@ -384,13 +496,12 @@ export default function Search(props) {
                                             tableLayout: "auto",
                                         },
                                     }}
-
                                     renderRowActions={({ row, table }) => (
                                         <IconButton
                                             color="black"
                                             onClick={() => {
                                                 setCurrentRoom(row.original);
-                                                console.log(row.original);
+                                                // console.log(row.original);
                                                 setShowDialog(true);
                                             }}
                                         >
@@ -404,10 +515,18 @@ export default function Search(props) {
                 </div>
             </div>
 
-            <Dialog onClose={() => setShowDialog(false)} open={showDialog} fullWidth={true}>
+            <Dialog
+                onClose={() => setShowDialog(false)}
+                open={showDialog}
+                fullWidth={true}
+            >
                 <div style={{ padding: 25 }}>
-                    <h3 className="text-2xl text-center font-medium mb-5">Select Time</h3>
-                    <h3 className="text-xl font-medium mb-3">{"Room: "+ currentRoom.name}</h3>
+                    <h3 className="text-2xl text-center font-medium mb-5">
+                        Select Time
+                    </h3>
+                    <h3 className="text-xl font-medium mb-3">
+                        {"Room: " + currentRoom.name}
+                    </h3>
                     <InputLabel
                         for="start"
                         value="Start time"
@@ -418,7 +537,7 @@ export default function Search(props) {
                         type="datetime-local"
                         className="mt-1 mb-3 w-full"
                         handleChange={(e) => {
-                            console.log(e.target.value);
+                            // console.log(e.target.value);
                             setStart(e.target.value);
                         }}
                         isFocused
@@ -434,23 +553,35 @@ export default function Search(props) {
                         type="datetime-local"
                         className="mt-1 mb-0 w-full"
                         handleChange={(e) => {
-                            console.log(e.target.value);
+                            // console.log(e.target.value);
                             setEnd(e.target.value);
                         }}
                         isFocused
                     />
                 </div>
-                <div style={{ display: 'flex', paddingRight: 25, paddingBottom: 25, justifyContent: 'right' }}>
-                    <button onClick={() => setShowDialog(false)} className="mr-4 px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                <div
+                    style={{
+                        display: "flex",
+                        paddingRight: 25,
+                        paddingBottom: 25,
+                        justifyContent: "right",
+                    }}
+                >
+                    <button
+                        onClick={() => setShowDialog(false)}
+                        className="mr-4 px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                    >
                         Cancel
                     </button>
-                    <button onClick={(e) => create(e)} className="px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150">
+                    <button
+                        onClick={(e) => create(e)}
+                        className="px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                    >
                         Confirm
                     </button>
                 </div>
             </Dialog>
-
-        </AuthenticatedLayout >
+        </AuthenticatedLayout>
     );
 }
 
