@@ -13,7 +13,6 @@ class Record extends Model
         'id',
         'userId',
         'roomId',
-        'numOfPeople',
         'timeFrom',
         'timeTo',
         'status',

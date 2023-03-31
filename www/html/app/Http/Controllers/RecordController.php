@@ -34,42 +34,65 @@ class RecordController extends Controller
     public function store(Request $request): Response
     {
         // $records = DB::table('records')->where([['roomId', '=', $request->roomId]])->get();
-        $id = DB::select('select MAX(id) as id from records');
-        $id = $id[0]->id + 1;
-        $records = DB::select('select * from records where roomId = :roomId and status >= 0 order by created_at', ['roomId' => $request->roomId]);
-        $rooms = DB::select('select capacity from rooms where roomId = ?', [$request->roomId]);
-        DB::table('rooms')->where([['roomId', '=', $request->roomId]])->get();
-        $conflictRecord = null;
-        $maxWaiting = 0;
 
-        foreach ($records as $x) {
-            if ($this->checkConflictTime($request, $x) && $x->status ==0) {
-                // return response([ 'error' => 'Time Conflict'], Response::HTTP_CONFLICT); 
-                $conflictRecord = $x;
-                break;
-            }
-        }
+        // id will auto generate
+        // $id = DB::select('select MAX(id) as id from records');
+        // $id = $id[0]->id + 1;
 
-        if ($conflictRecord != null) {
-            foreach ($records as $x) {
-                if ($this->checkConflictTime($x, $conflictRecord)) {
-                    $maxWaiting += 1;
-                }
-            }
-        }
-        $request->status = $maxWaiting;
+        $userId = $request->userId;
+        $roomId = $request->roomId;
+        $timeFrom = $request->timeFrom;
+        $timeTo = $request->timeTo;
+
+        $conflictingRecords = DB::select(
+            'SELECT * FROM records WHERE roomId = :roomId AND status >= 0 AND 
+                ((timeFrom >= :timeFrom1 AND timeFrom <= :timeTo1) OR 
+                (timeTo >= :timeFrom2 AND timeTo <= :timeTo2) OR 
+                (timeFrom <= :timeFrom3 AND timeTo >= :timeTo3)) 
+            ORDER BY created_at',
+            [
+                'roomId' => $roomId,
+                'timeFrom1' => $timeFrom,
+                'timeTo1' => $timeTo,
+                'timeFrom2' => $timeFrom,
+                'timeTo2' => $timeTo,
+                'timeFrom3' => $timeFrom,
+                'timeTo3' => $timeTo,
+            ]
+        );
 
         try {
-            DB::insert('insert into records (id, userId, roomId, numOfPeople, timeFrom, timeTo, status, created_at, updated_at) values (?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-                        [$id, $request->userId, $request->roomId, $rooms[0]->capacity, $request->timeFrom, $request->timeTo, $request->status, NOW(), NOW()]);
-            return response([ 'success' => $id], Response::HTTP_CREATED);
+
+            $status = 0;
+            foreach ($conflictingRecords as $record) {
+                DB::update(
+                    'UPDATE records SET status = ? WHERE id = ?',
+                    [$status, $record->id
+                    ]
+                );
+                $status++;
+            }
+
+            DB::insert(
+                'INSERT INTO records (userId, roomId, timeFrom, timeTo, status) VALUES (?, ?, ?, ?, ?)',
+                [$userId, $roomId, $timeFrom, $timeTo, $status]
+            );
+
+            $newBooking = DB::select(
+                'SELECT * FROM records WHERE userId = :userId AND roomId = :roomId AND status = :status AND timeFrom = :timeFrom AND timeTo = :timeTo',
+                [
+                    'userId' => $userId,
+                    'roomId' => $roomId,
+                    'status' => $status,
+                    'timeFrom' => $timeFrom,
+                    'timeTo' => $timeTo,
+                ]
+            );
+            return response([ 'success' => $newBooking[0]->id], Response::HTTP_CREATED);
         } catch (\Throwable $e) {
             // dd($e->errorInfo);
             $errorCode = $e->errorInfo[1];
             $errorMessage = $e->errorInfo[2];
-            if (str_contains($errorMessage, "numOfPeople") && str_contains($errorMessage, "Out of range")) {
-                return response(['error' => 'Number of people must larger than 0'], Response::HTTP_CONFLICT);
-            }
             return response([ 'error' => $errorMessage], Response::HTTP_CONFLICT);
         }
     }

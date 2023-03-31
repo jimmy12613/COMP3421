@@ -53,7 +53,6 @@ export default function Search(props) {
                     document.getElementById("best").style.display = "none";
                     console.log("No data");
                 }
-                console.log(roomBest);
             })
             .catch((error) => {
                 console.log(error);
@@ -172,7 +171,7 @@ export default function Search(props) {
 
     //console.log(props)
     // console.log(props.roomDataSrc);
-    console.log(roomBest.name);
+    // console.log(roomBest.name);
     //console.log(roomColumns);
 
     return (
