@@ -88,7 +88,7 @@ class RecordController extends Controller
                     'timeTo' => $timeTo,
                 ]
             );
-            return response([ 'success' => $newBooking[0]->id], Response::HTTP_CREATED);
+            return response([ 'success' => $newBooking[0]->id, 'waitList' => $newBooking[0]->status], Response::HTTP_CREATED);
         } catch (\Throwable $e) {
             // dd($e->errorInfo);
             $errorCode = $e->errorInfo[1];
@@ -132,49 +132,51 @@ class RecordController extends Controller
      */
     public function destroy(Record $record): Response
     {
+        $record = Record::findOrFail($record->id);
+
+        $roomId = $record->roomId;
+        $timeFrom = $record->timeFrom;
+        $timeTo = $record->timeTo;
+
         $record->delete();
-        $conflictRecord = null;
 
-        $acceptedRecords = DB::select('select * from records where roomId = :roomId and status = 0', ['roomId' => $record->roomId]);
-        $WaitlistRecords = DB::select('select * from records where roomId = :roomId and status > 0 order by created_at', ['roomId' => $record->roomId]);
-        
-        if ($record->status !=0) {
-            foreach ($acceptedRecords as $x) {
-                if ($this->checkConflictTime($record, $x)) {
-                    $conflictRecord = $x;
-                    foreach ($WaitlistRecords as $w) {
-                        if ($this->checkConflictTime($w, $conflictRecord) && $w->status > $record->status) {
-                            $affected = DB::update('update records set status = ?, updated_at = NOW() where id = ?', [(($w->status)-1), $w->id]);
-                        }
-                    }
-                }
+        $conflictingRecords = DB::select(
+            'SELECT * FROM records WHERE roomId = :roomId AND status >= 0 AND 
+                ((timeFrom >= :timeFrom1 AND timeFrom <= :timeTo1) OR 
+                (timeTo >= :timeFrom2 AND timeTo <= :timeTo2) OR 
+                (timeFrom <= :timeFrom3 AND timeTo >= :timeTo3)) 
+            ORDER BY created_at',
+            [
+                'roomId' => $roomId,
+                'timeFrom1' => $timeFrom,
+                'timeTo1' => $timeTo,
+                'timeFrom2' => $timeFrom,
+                'timeTo2' => $timeTo,
+                'timeFrom3' => $timeFrom,
+                'timeTo3' => $timeTo,
+            ]
+        );
+
+        try {
+
+            $status = 0;
+            foreach ($conflictingRecords as $record) {
+                DB::update(
+                    'UPDATE records SET status = ? WHERE id = ?',
+                    [
+                        $status, $record->id
+                    ]
+                );
+                $status++;
             }
-        } else {
-            $acceptedRecords = DB::select('select * from records where roomId = :roomId and status = 0', ['roomId' => $record->roomId]);
-            $conflicted = false;
-            $allocated = false;
-            foreach ($WaitlistRecords as $x) {
-                $conflicted = false;
-                if ($this->checkConflictTime($x, $record)) {
-                    if (!$allocated){
-                        foreach ($acceptedRecords as $a) {
-                            if ($this->checkConflictTime($x, $a)) {
-                                $conflicted = true;
-                                break;
-                            } 
-                        }
-                        if (!$conflicted) {
-                            $affected = DB::update('update records set status = ?, updated_at = NOW() where id = ?', [0, $x->id]);
-                            $allocated = true;
-                        }
-                    } else {
-                        $affected = DB::update('update records set status = ?, updated_at = NOW() where id = ?', [($x->status)-1, $x->id]);
-                    }
-                }
-            }
+
+            return response(['success' => 'Record deleted'], Response::HTTP_OK);
+        } catch (\Throwable $e) {
+            // dd($e->errorInfo);
+            $errorCode = $e->errorInfo[1];
+            $errorMessage = $e->errorInfo[2];
+            return response(['error' => $errorMessage], Response::HTTP_CONFLICT);
         }
-
-        return response([ 'success' => 'Record deleted'], Response::HTTP_OK);
     }
 
     public function getActiveRecords(): Response
