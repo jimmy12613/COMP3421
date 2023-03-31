@@ -97,7 +97,8 @@ class RoomController extends Controller
      */
     public function destroy(Room $room): Response
     {
-        return response([ 'success' => 'Room deleted'], Response::HTTP_OK);
+        $result = $room->delete();
+        return response([ "success" => $result?"Room deleted":"Error"], Response::HTTP_OK);
     }
 
     public function getBestMatch(): Response

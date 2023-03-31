@@ -8,6 +8,7 @@ import MaterialReactTable from "material-react-table";
 import { MenuItem } from "@mui/material";
 import { useTheme, ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import axios from "axios";
 
 export default function Search(props) {
     console.log(props)
@@ -304,7 +305,18 @@ export default function Search(props) {
                                             <MenuItem
                                                 key={1}
                                                 onClick={() => {
-                                                    // TODO: Delete logic...
+                                                    axios.delete(route("room.destroy", {id: row.original.roomId}))
+                                                    .then((response) => {
+                                                        console.log(response);
+                                                        try {
+                                                            confirm(response.data['success'])?window.location.reload():window.location.reload();
+                                                        } catch (error) {
+                                                            window.alert("Error")
+                                                        }
+                                                    })
+                                                    .catch((error) => {
+                                                        console.log(error);
+                                                    });
                                                     closeMenu();
                                                 }}
                                                 sx={{ m: 0 }}
