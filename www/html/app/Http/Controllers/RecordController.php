@@ -183,35 +183,27 @@ class RecordController extends Controller
     {
         $records = DB::table('records')->where([
             ['userId', '=', auth()->user()->userId],
-            ['timeTo', '>', now()],
+            ['timeTo', '>=', now()],
             ['status', '=', 0]
         ])->get();
         return response($records, Response::HTTP_OK);
     }
 
-    public function getAllRecords(): Response
+    public function getPastRecords(): Response
     {
         $records = DB::table('records')->where([
             ['userId', '=', auth()->user()->userId],
-            ['status', '=', 0]
+            ['status', '=', 0],
+            ['timeTo', '=<', now()]
         ])->get();
         return response($records, Response::HTTP_OK);
     }
 
-    public function getActiveWaitList(): Response
+    public function getWaitList(): Response
     {
         $records = DB::table('records')->where([
             ['userId', '=', auth()->user()->userId],
-            ['timeTo', '>', now()],
-            ['status', '>', 0]
-        ])->get();
-        return response($records, Response::HTTP_OK);
-    }
-
-    public function getAllWaitList(): Response
-    {
-        $records = DB::table('records')->where([
-            ['userId', '=', auth()->user()->userId],
+            ['timeTo', '>=', now()],
             ['status', '>', 0]
         ])->get();
         return response($records, Response::HTTP_OK);
