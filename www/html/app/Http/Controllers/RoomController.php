@@ -110,9 +110,9 @@ class RoomController extends Controller
             ['num_microphones', '>=', request('num_microphones') ?: 0]
         ])->get();
 
-        if (empty($rooms)) {
-            return response(Response::HTTP_NOT_FOUND);
-        }
+        // if (empty($rooms)) {
+        //     return response(Response::HTTP_NOT_FOUND);
+        // }
 
         $bestMatchRoom = $rooms[0];
         $bestMatchScore = $rooms[0]->capacity +
@@ -131,8 +131,6 @@ class RoomController extends Controller
                 $bestMatchRoom = $room;
             }
         }
-
-        return $bestMatchRoom;
 
         return response([$bestMatchRoom], Response::HTTP_OK);
     }
