@@ -15,11 +15,9 @@ return new class extends Migration
             $table->id('id');
             $table->unsignedBigInteger('userId');
             $table->unsignedBigInteger('roomId');
-            $table->integer('numOfPeople');
             $table->timestamp('timeFrom');
             $table->timestamp('timeTo');
-            $table->string('status')->default('ongoing');
-            //ongoing, completed, cancelled
+            $table->integer('status')->default(0);
             $table->timestamps();
             // $table->foreign('userId')->references('userId')->on('users');
             // $table->foreign('roomId')->references('roomId')->on('rooms');
