@@ -320,7 +320,20 @@ export default function Search(props) {
                                             <MenuItem
                                                 key={1}
                                                 onClick={() => {
-                                                    // TODO: Delete logic...
+                                                    confirm("Are you sure?")?
+                                                        axios.delete(route("room.destroy", {id: row.original.roomId}))
+                                                            .then((response) => {
+                                                                console.log(response);
+                                                                try {
+                                                                    confirm(response.data['success'])?window.location.reload():window.location.reload();
+                                                                } catch (error) {
+                                                                    window.alert("Error")
+                                                                }
+                                                            })
+                                                            .catch((error) => {
+                                                                console.log(error);
+                                                            })
+                                                        :closeMenu();
                                                     closeMenu();
                                                 }}
                                                 sx={{ m: 0 }}
