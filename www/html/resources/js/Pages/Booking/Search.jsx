@@ -47,7 +47,7 @@ export default function Search(props) {
                 if (response.data.length > 0) {
                     setRoomBest(response.data[0]);
                     document.getElementById("best").style.display = "block";
-                    document.getElementById("init").innerText = null;
+                    document.getElementById("init").remove();
                 } else {
                     setRoomBest({});
                     document.getElementById("best").style.display = "none";
@@ -67,28 +67,28 @@ export default function Search(props) {
             window.alert("Please choose time!");
             return;
         } else if (start >= end) {
-            window.alert("Invalid time! ");
+            window.alert("Invalid time!");
             return;
         }
-        
+
         const insertData = {
             'userId': props.auth.user.userId,
             'roomId': currentRoom.roomId,
             'timeFrom': start,
             'timeTo': end,
             'status': 0,
-        }
-        
+        };
+
         axios
             .post(route("record.store"), insertData)
             .then((response) => {
                 console.log(response.data);    // Set data here
                 if (response.data.success) {
                     setShowDialog(false);
-                    window.alert("Booking confirmed! Your booking ID is " + response.data.success)
+                    window.alert("Booking confirmed! Your booking ID is " + response.data.success);
                 } else {
                     setShowDialog(false);
-                    window.alert("Errorrrrr ")
+                    window.alert("Errorrrrr ");
                 }
                 // console.log(response.data.success);
                 console.log(response.data);    // Set data here
@@ -331,6 +331,7 @@ export default function Search(props) {
                                     style={{
                                         columnWidth: "185px",
                                         width: "100%",
+                                        paddingTop: "10px",
                                         boxShadow: "0px 0px 1px 0px #000000",
                                     }}
                                 >
@@ -409,18 +410,17 @@ export default function Search(props) {
                                                     paddingBottom: 15,
                                                 }}
                                             >
-                                                <IconButton
-                                                    color="black"
-                                                    onClick={() => {
+                                                <div style={{ "display": "flex", "justifyContent": "center" }}>
+                                                    <button onClick={() => {
                                                         setCurrentRoom(
                                                             roomBest
                                                         );
                                                         // console.log(roomBest[0]);
                                                         setShowDialog(true);
-                                                    }}
-                                                >
-                                                    <Add />
-                                                </IconButton>
+                                                    }}>
+                                                        Book
+                                                    </button>
+                                                </div>
                                             </td>
                                             <td
                                                 style={{
@@ -499,16 +499,18 @@ export default function Search(props) {
                                         },
                                     }}
                                     renderRowActions={({ row, table }) => (
-                                        <IconButton
-                                            color="black"
-                                            onClick={() => {
-                                                setCurrentRoom(row.original);
-                                                // console.log(row.original);
+                                        <div style={{ "display": "flex", "justifyContent": "center" }}>
+                                            <button onClick={() => {
+                                                setCurrentRoom(
+                                                    roomBest
+                                                );
+                                                // console.log(roomBest[0]);
                                                 setShowDialog(true);
-                                            }}
-                                        >
-                                            <Add />
-                                        </IconButton>
+                                            }}>
+                                                Book
+                                            </button>
+                                        </div>
+
                                     )}
                                 />
                             </div>

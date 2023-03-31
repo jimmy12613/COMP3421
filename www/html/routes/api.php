@@ -30,13 +30,13 @@ Route::apiResource('room', RoomController::class);
 Route::post('room/search', [RoomController::class, 'search'])->name('room.searchList');
 Route::apiResource('record', RecordController::class);
 Route::get('getActiveRecords', [RecordController::class, 'getActiveRecords'])->name('record.getActiveRecords');
+Route::post('getBestMatch', [RoomController::class, 'getBestMatch'])->name('room.getBestMatch');
 // dev
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('room', RoomController::class);
     Route::post('room/search', [RoomController::class, 'search'])->name('room.searchList');
     Route::post('getBestMatch', [RoomController::class, 'getBestMatch'])->name('room.getBestMatch');
-
     Route::apiResource('record', RecordController::class);
 
     Route::get('getActiveRecords', [RecordController::class, 'getActiveRecords'])->name('record.getActiveRecords');

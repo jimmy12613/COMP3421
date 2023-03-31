@@ -219,8 +219,3 @@ class RecordController extends Controller
         return (($new->timeFrom >= $old->timeFrom) && ($new->timeFrom < $old->timeTo) || ($new->timeTo > $old->timeFrom) && ($new->timeTo <= $old->timeTo));
     }
 }
-
-/*
-new
-current
-*/
