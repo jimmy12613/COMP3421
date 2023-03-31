@@ -15,22 +15,22 @@ import { Add, Create } from "@mui/icons-material";
 
 export default function Search(props) {
     const [roomAll, setRoomAll] = useState(props.roomDataSrc);
-    const [roomBest, setRoomBest] = useState(props.roomDataSrc);
+    const [roomBest, setRoomBest] = useState(props.roomDataSrc[0]);
     const [currentRoom, setCurrentRoom] = useState("");
-    //const [roomBest, setRoomBest] = useState(props.roomDataSrc);
     const memRoomAll = useMemo(() => roomAll, [roomAll]);
     const memRoomBest = useMemo(() => roomBest, [roomBest]);
     const [showDialog, setShowDialog] = useState(false);
     const [start, setStart] = useState("");
     const [end, setEnd] = useState("");
 
-
+    console.log(props.auth.user.userId);
+    console.log(props);
     const { data, setData, post, processing, recentlySuccessful } = useForm({
         name: "",
-        capacity: "1",
-        num_computers: "1",
-        num_projectors: "1",
-        num_microphones: "1",
+        capacity: "",
+        num_computers: "",
+        num_projectors: "",
+        num_microphones: "",
     });
 
     const submit = (e) => {
@@ -39,11 +39,26 @@ export default function Search(props) {
         axios
             .post(route("room.searchList"), data)
             .then((response) => {
-                setRoomAll(response.data);    // Set data here
+                setRoomBest(response.data[0]);    // Set data here
+                //setRoomAll(response.data[1]);    // Set data here
+                document.getElementById("best").style.display = "block";
             })
             .catch((error) => {
                 console.log(error);
             });
+        /*
+        axios
+            .post(route("record.searchList"), data)
+            .then((response) => {
+                setRoomBest(response.data[0]);    // Set data here
+                setRoomAll(response.data[1]);    // Set data here
+                document.getElementById("best").style.display = "block";
+
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        */
     };
 
     const create = (e) => {
@@ -52,13 +67,28 @@ export default function Search(props) {
             window.alert("Please choose time!");
             return;
         } else if (start >= end) {
-            window.alert("Invalid time!");
+            window.alert("Invalid time! ");
             return;
         }
+        
+        const insertData = {
+            'userId': props.auth.user.userId,
+            'roomId': currentRoom.roomId,
+            'timeFrom': start,
+            'timeTo': end,
+        }
+        
         axios
-            .post(route("room.searchList"), data)
+            .post(route("record.store"), insertData)
             .then((response) => {
-                setRoomAll(response.data);    // Set data here
+                if (response.data.success) {
+                    setShowDialog(false);
+                    window.alert("Booking confirmed! Your booking ID is " + response.data.success)
+                } else {
+                    setShowDialog(false);
+                    window.alert("Error " + response.data.success)
+                }
+                console.log(response.data.success);    // Set data here
             })
             .catch((error) => {
                 console.log(error);
@@ -140,7 +170,8 @@ export default function Search(props) {
     );
 
     //console.log(props)
-    // console.log(memRoomDataSrc);
+    console.log(props.roomDataSrc);
+    console.log(roomBest);
     //console.log(roomColumns);
 
     return (
@@ -278,42 +309,48 @@ export default function Search(props) {
                 </div>
             </div>
 
-            <div className="pt-12 pl-12 pr-12" style={{ "display": "none" }}>
+            <div className="pt-12 pl-12 pr-12" id="best" style={{"display": "none"}}>
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900 dark:text-gray-100">
                             <h2 className="text-xl font-semibold">Best Match</h2>
                             <div id="grid" className="p-4">
                                 <CssBaseline />
-                                <MaterialReactTable
-                                    columns={roomColumns}
-                                    data={memRoomAll}
-                                    enableRowActions
-                                    enableColumnResizing
-                                    initialState={{
-                                        showColumnFilters: true,
-                                        density: "compact",
-                                        sorting: [
-                                            {
-                                                id: "name", //sort by name by default on page load
-                                                desc: false,
-                                            },
-                                        ],
-                                    }}
-                                    muiTableProps={{
-                                        sx: {
-                                            tableLayout: "auto",
-                                        },
-                                    }}
-
-                                    renderRowActions={({ row, table }) => (
-                                        <IconButton
-                                            color="black"
-                                        >
-                                            <Add />
-                                        </IconButton>
-                                    )}
-                                />
+                                <table style={{"columnWidth": "185px", "width": "100%", "boxShadow": "0px 0px 1px 0px #000000"}}>
+                                    <thead>
+                                        <tr>
+                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>Action</th>
+                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>Room Name</th>
+                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>Room Location</th>
+                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>Room Capacity</th>
+                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>No. of computers</th>
+                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>No. of projectors</th>
+                                            <th style={{"textAlign": "center", paddingTop: 15, paddingBottom: 15}}>No. of microphones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style={{"textAlign": "center", paddingBottom: 15}}>
+                                                <IconButton
+                                                    color="black"
+                                                    onClick={() => {
+                                                        setCurrentRoom(roomBest);
+                                                        console.log(roomBest[0]);
+                                                        setShowDialog(true);
+                                                    }}
+                                                >
+                                                    <Add />
+                                                </IconButton>
+                                            </td>
+                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.name}</td>
+                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.location}</td>
+                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.capacity}</td>
+                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.num_computers}</td>
+                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.num_projectors}</td>
+                                            <td style={{"textAlign": "center", paddingBottom: 15}}>{roomBest.num_microphones}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -370,7 +407,7 @@ export default function Search(props) {
             <Dialog onClose={() => setShowDialog(false)} open={showDialog} fullWidth={true}>
                 <div style={{ padding: 25 }}>
                     <h3 className="text-2xl text-center font-medium mb-5">Select Time</h3>
-                    <h3 className="text-xl font-medium mb-3">{currentRoom.name}</h3>
+                    <h3 className="text-xl font-medium mb-3">{"Room: "+ currentRoom.name}</h3>
                     <InputLabel
                         for="start"
                         value="Start time"
@@ -417,21 +454,3 @@ export default function Search(props) {
     );
 }
 
-/*
-<label htmlFor={"start"} className={`inline font-medium text-md text-gray-700 dark:text-gray-300 `}>
-                    Start Time
-                </label>
-                <TextInput
-                    id="start"
-                    type="datetime-local"
-                    className="mt-1 inline "
-                    value={data.name}
-                    handleChange={(e) =>
-                        setData(
-                            "name",
-                            e.target.value
-                        )
-                    }
-                    isFocused
-                />
-                */
