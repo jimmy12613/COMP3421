@@ -51,6 +51,12 @@ export default function Authenticated({ auth, header, children }) {
                                 >
                                     Dashboard
                                 </NavLink>
+                                <NavLink
+                                    href={route("booking.search")}
+                                    active={route().current("booking.search")}
+                                >
+                                    Booking
+                                </NavLink>
                                 {adminTab}
                             </div>
                         </div>

@@ -99,4 +99,41 @@ class RoomController extends Controller
     {
         return response([ 'success' => 'Room deleted'], Response::HTTP_OK);
     }
+
+    public function getBestMatch(): Response
+    {
+        $rooms = DB::table('rooms')->where([
+            ['name', 'like', '%' . request('name') . '%'],
+            ['capacity', '>=', request('capacity') ?: 0],
+            ['num_computers', '>=', request('num_computers') ?: 0],
+            ['num_projectors', '>=', request('num_projectors') ?: 0],
+            ['num_microphones', '>=', request('num_microphones') ?: 0]
+        ])->get();
+
+        if (empty($rooms)) {
+            return response(Response::HTTP_NOT_FOUND);
+        }
+
+        $bestMatchRoom = $rooms[0];
+        $bestMatchScore = $rooms[0]->capacity +
+            $rooms[0]->num_computers +
+            $rooms[0]->num_projectors +
+            $rooms[0]->num_microphones;
+
+        foreach ($rooms as $room) {
+            $score = $room->capacity +
+                $room->num_computers +
+                $room->num_projectors +
+                $room->num_microphones;
+
+            if ($score < $bestMatchScore) {
+                $bestMatchScore = $score;
+                $bestMatchRoom = $room;
+            }
+        }
+
+        return $bestMatchRoom;
+
+        return response([$bestMatchRoom], Response::HTTP_OK);
+    }
 }
