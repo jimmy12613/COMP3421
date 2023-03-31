@@ -9,7 +9,6 @@ import { MenuItem, Dialog } from "@mui/material";
 import { useTheme, ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
-
 export default function Search(props) {
     console.log(props)
 
@@ -321,11 +320,7 @@ export default function Search(props) {
                                             <MenuItem
                                                 key={1}
                                                 onClick={() => {
-                                                    console.log(typeof(row.original));
-                                                    console.log(row.original);
-                                                    setCurrentRoom(row.original);
-                                                    setShowDeleteDialog(true);
-                                                    
+                                                    // TODO: Delete logic...
                                                     closeMenu();
                                                 }}
                                                 sx={{ m: 0 }}
