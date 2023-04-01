@@ -24,7 +24,10 @@ class AdminAuthorize
         }
         if (Auth::user()->isAdmin == 1) {
             return $next($request);
+        }else{
+            return redirect(RouteServiceProvider::HOME);
         }
+
         return $next($request);
         // return redirect(RouteServiceProvider::HOME);
         return $request->expectsJson() ? null : route('login');
