@@ -3,9 +3,13 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import { useState } from "react";
+import { Dialog } from "@mui/material";
 import { Head, useForm } from "@inertiajs/react";
 
 export default function Detail(props) {
+    const [showDialog, setShowDialog] = useState(false);
+    const [dialogMsg, setDialogMsg] = useState("");
+
     console.log("First" + props.roomDataSrc);
     console.log(props.roomDataSrc);
     console.log(props);
@@ -46,17 +50,19 @@ export default function Detail(props) {
                     window.location.href = route("room.search");
                 });
         } else {
-            console.log("data here");
-            console.log(data);
-            console.log(props.roomDataSrc[0])
+            //console.log("data here");
+            //console.log(data);
+            //console.log(props.roomDataSrc[0])
             axios
                 .patch(route("room.update", {id: props.id}), data)
                 .then((response) => {
                     console.log(response);
                     if (response.data.error) {
-                        window.alert("Error, please contact admin.");
+                        setDialogMsg("Error, please contact admin.");
+                        setShowDialog(true);
                     } else {
-                        window.alert("Room successfully updated.");
+                        setDialogMsg("Room successfully updated.");
+                        setShowDialog(true);
                     }
                     // window.location.href = route("room.search");
                 })
@@ -228,6 +234,42 @@ export default function Detail(props) {
                     </div>
                 </div>
             </div>
+            <Dialog
+                onClose={() => setShowDialog(false)}
+                open={showDialog}
+                fullWidth={true}
+            >
+                <div style={{ padding: 25 }}>
+                    <h3 className="text-2xl text-center font-medium mb-5">
+                        Update Room
+                    </h3>
+                    <h3 className="text-xl font-medium mb-3">
+                        {"Room updated."}
+                    </h3>
+                    
+                </div>
+                <div
+                    style={{
+                        display: "flex",
+                        paddingRight: 25,
+                        paddingBottom: 25,
+                        justifyContent: "right",
+                    }}
+                >
+                    <button
+                        onClick={() => window.location.href = route("room.search")}
+                        className="mr-4 px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                    >
+                        Back
+                    </button>
+                    <button
+                        onClick={(e) => setShowDialog(false)}
+                        className="px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
+                    >
+                        OK
+                    </button>
+                </div>
+            </Dialog>
         </AuthenticatedLayout>
     );
 }

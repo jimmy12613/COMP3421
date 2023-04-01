@@ -194,7 +194,7 @@ class RecordController extends Controller
         $records = DB::table('records')->where([
             ['userId', '=', auth()->user()->userId],
             ['status', '=', 0],
-            ['timeTo', '=<', now()]
+            ['timeTo', '<=', now()]
         ])->get();
         return response($records, Response::HTTP_OK);
     }

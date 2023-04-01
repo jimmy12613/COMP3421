@@ -33,7 +33,24 @@ Route::get('/', function () {
 // 它返回一個名為Dashboard的渲染視圖。
 // 此路由僅供已驗證其電子郵件地址(verified)的經過身份驗證(auth)的用戶訪問。
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard',['justTesting' => 'Hello World!']);
+    return Inertia::render('Dashboard',[
+        'active' => Route::get('posts', [RecordController::class, 'getPastRecords']),
+        'active' => DB::table('records')->where([
+            ['userId', '=', auth()->user()->userId],
+            ['timeTo', '>=', now()],
+            ['status', '=', 0]
+        ])->get(),
+        'past' => DB::table('records')->where([
+            ['userId', '=', auth()->user()->userId],
+            ['status', '=', 0],
+            ['timeTo', '<=', now()]
+        ])->get(),
+        'waitlist' => DB::table('records')->where([
+            ['userId', '=', auth()->user()->userId],
+            ['timeTo', '>=', now()],
+            ['status', '>', 0]
+        ])->get(),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('admin')->group(function () {
