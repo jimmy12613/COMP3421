@@ -35,6 +35,7 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard',[
         'active' => Route::get('posts', [RecordController::class, 'getPastRecords']),
+        'roomDataSrc' => DB::table('rooms')->get(),
         'active' => DB::table('records')->where([
             ['userId', '=', auth()->user()->userId],
             ['timeTo', '>=', now()],
