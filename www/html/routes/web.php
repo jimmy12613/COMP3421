@@ -34,7 +34,7 @@ Route::get('/', function () {
 // 此路由僅供已驗證其電子郵件地址(verified)的經過身份驗證(auth)的用戶訪問。
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard',[
-        'active' => Route::get('posts', [RecordController::class, 'getPastRecords']),
+        'active' => [RecordController::class, 'getPastRecords'],
         'roomDataSrc' => DB::table('rooms')->get(),
         'active' => DB::table('records')->where([
             ['userId', '=', auth()->user()->userId],
@@ -62,6 +62,10 @@ Route::middleware('admin')->group(function () {
     })->name('room.search');
     Route::get('/room/{id}', function () {
         try {
+            $roomDataSrc = DB::table('rooms')->where('roomId', request()->id)->get();
+            if (count($roomDataSrc) == 0) {
+                return redirect()->route('room.search');
+            }
             return Inertia::render('Room/Detail', [
                 'id' => request()->id,
                 'roomDataSrc' => DB::table('rooms')->where('roomId', request()->id)->get(),
