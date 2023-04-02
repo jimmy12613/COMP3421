@@ -97,6 +97,7 @@ class RoomController extends Controller
      */
     public function destroy(Room $room): Response
     {
+        DB::table('records')->where('roomId', $room->roomId)->delete();
         $result = $room->delete();
         return response([ "success" => $result?"Room deleted":"Error"], Response::HTTP_OK);
     }

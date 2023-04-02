@@ -320,7 +320,7 @@ export default function Search(props) {
                                             <MenuItem
                                                 key={1}
                                                 onClick={() => {
-                                                    confirm("Are you sure?")?
+                                                    confirm("Are you sure? All related booking records will be deleted.")?
                                                         axios.delete(route("room.destroy", {id: row.original.roomId}))
                                                             .then((response) => {
                                                                 console.log(response);
