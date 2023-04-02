@@ -40,17 +40,17 @@ Route::get('/dashboard', function () {
             ['userId', '=', auth()->user()->userId],
             ['timeTo', '>=', now()],
             ['status', '=', 0]
-        ])->get(),
+        ])->leftJoin('rooms', 'records.roomId', '=', 'rooms.roomId')->get(),
         'past' => DB::table('records')->where([
             ['userId', '=', auth()->user()->userId],
             ['status', '=', 0],
             ['timeTo', '<=', now()]
-        ])->get(),
+        ])->leftJoin('rooms', 'records.roomId', '=', 'rooms.roomId')->get(),
         'waitlist' => DB::table('records')->where([
             ['userId', '=', auth()->user()->userId],
             ['timeTo', '>=', now()],
             ['status', '>', 0]
-        ])->get(),
+        ])->leftJoin('rooms', 'records.roomId', '=', 'rooms.roomId')->get(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
