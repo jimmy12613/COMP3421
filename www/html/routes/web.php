@@ -62,13 +62,9 @@ Route::middleware('admin')->group(function () {
     })->name('room.search');
     Route::get('/room/{id}', function () {
         try {
-            $roomDataSrc = DB::table('rooms')->where('roomId', request()->id)->get();
-            if (count($roomDataSrc) == 0) {
-                return redirect()->route('room.search');
-            }
             return Inertia::render('Room/Detail', [
                 'id' => request()->id,
-                'roomDataSrc' => DB::table('rooms')->where('roomId', request()->id)->get(),
+                'roomDataSrc' => request()->id == -1?[]:DB::table('rooms')->where('roomId', request()->id)->get(),
             ]);
         } catch (\Throwable $th) {
             return redirect()->route('room.search');
