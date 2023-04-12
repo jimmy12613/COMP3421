@@ -33,7 +33,25 @@ Route::get('/', function () {
 // 它返回一個名為Dashboard的渲染視圖。
 // 此路由僅供已驗證其電子郵件地址(verified)的經過身份驗證(auth)的用戶訪問。
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard',['justTesting' => 'Hello World!']);
+    return Inertia::render('Dashboard',[
+        'active' => [RecordController::class, 'getPastRecords'],
+        'roomDataSrc' => DB::table('rooms')->get(),
+        'active' => DB::table('records')->where([
+            ['userId', '=', auth()->user()->userId],
+            ['timeTo', '>=', now()],
+            ['status', '=', 0]
+        ])->leftJoin('rooms', 'records.roomId', '=', 'rooms.roomId')->get(),
+        'past' => DB::table('records')->where([
+            ['userId', '=', auth()->user()->userId],
+            ['status', '=', 0],
+            ['timeTo', '<=', now()]
+        ])->leftJoin('rooms', 'records.roomId', '=', 'rooms.roomId')->get(),
+        'waitlist' => DB::table('records')->where([
+            ['userId', '=', auth()->user()->userId],
+            ['timeTo', '>=', now()],
+            ['status', '>', 0]
+        ])->leftJoin('rooms', 'records.roomId', '=', 'rooms.roomId')->get(),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('admin')->group(function () {
@@ -44,6 +62,10 @@ Route::middleware('admin')->group(function () {
     })->name('room.search');
     Route::get('/room/{id}', function () {
         try {
+            $roomDataSrc = DB::table('rooms')->where('roomId', request()->id)->get();
+            if (count($roomDataSrc) == 0) {
+                return redirect()->route('room.search');
+            }
             return Inertia::render('Room/Detail', [
                 'id' => request()->id,
                 'roomDataSrc' => DB::table('rooms')->where('roomId', request()->id)->get(),

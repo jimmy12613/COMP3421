@@ -82,7 +82,7 @@ export default function Search(props) {
         axios
             .post(route("record.store"), insertData)
             .then((response) => {
-                console.log(response.data);    // Set data here
+                // console.log(response.data);
                 if (response.data.success) {
                     if (response.data.waitList) {
                         setShowDialog(false);
@@ -327,7 +327,10 @@ export default function Search(props) {
                             <h2 className="text-xl font-semibold">
                                 Best Match
                             </h2>
-                            <p id="init" className="pl-6 mb-8 text-lg text-gray-900 dark:text-gray-100">
+                            <p
+                                id="init"
+                                className="pl-6 mb-8 text-lg text-gray-900 dark:text-gray-100"
+                            >
                                 Best match will show after search
                             </p>
                             <div
@@ -418,14 +421,22 @@ export default function Search(props) {
                                                     paddingBottom: 15,
                                                 }}
                                             >
-                                                <div style={{ "display": "flex", "justifyContent": "center" }}>
-                                                    <button onClick={() => {
-                                                        setCurrentRoom(
-                                                            roomBest
-                                                        );
-                                                        // console.log(roomBest[0]);
-                                                        setShowDialog(true);
-                                                    }}>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        justifyContent:
+                                                            "center",
+                                                    }}
+                                                >
+                                                    <button
+                                                        onClick={() => {
+                                                            setCurrentRoom(
+                                                                roomBest
+                                                            );
+                                                            // console.log(roomBest[0]);
+                                                            setShowDialog(true);
+                                                        }}
+                                                    >
                                                         Book
                                                     </button>
                                                 </div>
@@ -507,18 +518,24 @@ export default function Search(props) {
                                         },
                                     }}
                                     renderRowActions={({ row, table }) => (
-                                        <div style={{ "display": "flex", "justifyContent": "center" }}>
-                                            <button onClick={() => {
-                                                setCurrentRoom(
-                                                    row.original
-                                                );
-                                                // console.log(roomBest[0]);
-                                                setShowDialog(true);
-                                            }}>
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                justifyContent: "center",
+                                            }}
+                                        >
+                                            <button
+                                                onClick={() => {
+                                                    setCurrentRoom(
+                                                        row.original
+                                                    );
+                                                    // console.log(roomBest[0]);
+                                                    setShowDialog(true);
+                                                }}
+                                            >
                                                 Book
                                             </button>
                                         </div>
-
                                     )}
                                 />
                             </div>
@@ -532,11 +549,14 @@ export default function Search(props) {
                 open={showDialog}
                 fullWidth={true}
             >
-                <div style={{ padding: 25 }}>
-                    <h3 className="text-2xl text-center font-medium mb-5">
+                <div
+                    className="bg-white dark:bg-gray-800 shadow-sm"
+                    style={{ padding: 25 }}
+                >
+                    <h3 className="text-2xl text-center font-medium mb-4 text-gray-700 dark:text-gray-300">
                         Select Time
                     </h3>
-                    <h3 className="text-xl font-medium mb-3">
+                    <h3 className="text-xl font-medium mb-3 text-gray-700 dark:text-gray-300">
                         {"Room: " + currentRoom.name}
                     </h3>
                     <InputLabel
@@ -572,6 +592,7 @@ export default function Search(props) {
                     />
                 </div>
                 <div
+                    className="bg-white dark:bg-gray-800 shadow-sm"
                     style={{
                         display: "flex",
                         paddingRight: 25,

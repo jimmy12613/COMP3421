@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Providers\RouteServiceProvider;
 use Symfony\Component\HttpFoundation\Response;
+use Termwind\Components\Dd;
 
 class AdminAuthorize
 {
@@ -18,15 +19,17 @@ class AdminAuthorize
      */
     public function handle(Request $request, Closure $next): Response
     {   
-        // if(false){
+        if (str_contains($request->path(), "email")|| str_contains($request->path(), "logout") || str_contains($request->path(), "password") ) {
+            return $next($request);
+        }
         if (!Auth::check()) {
             return redirect(RouteServiceProvider::HOME);
         }
         if (Auth::user()->isAdmin == 1) {
             return $next($request);
+        }else{
+            return redirect(RouteServiceProvider::HOME);
         }
-        return $next($request);
-        // return redirect(RouteServiceProvider::HOME);
         return $request->expectsJson() ? null : route('login');
     }
 }

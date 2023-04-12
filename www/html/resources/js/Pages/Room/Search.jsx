@@ -10,9 +10,9 @@ import { useTheme, ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
 export default function Search(props) {
-    console.log(props)
+    // console.log(props)
 
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    
     const [currentRoom, setCurrentRoom] = useState("");
     const { data, setData, post, processing, recentlySuccessful } = useForm({
         name: "",
@@ -320,10 +320,10 @@ export default function Search(props) {
                                             <MenuItem
                                                 key={1}
                                                 onClick={() => {
-                                                    confirm("Are you sure?")?
+                                                    confirm("Are you sure? All related booking records will be deleted.")?
                                                         axios.delete(route("room.destroy", {id: row.original.roomId}))
                                                             .then((response) => {
-                                                                console.log(response);
+                                                                // console.log(response);
                                                                 try {
                                                                     confirm(response.data['success'])?window.location.reload():window.location.reload();
                                                                 } catch (error) {
@@ -349,42 +349,7 @@ export default function Search(props) {
             </div>
 
 
-            <Dialog
-                onClose={() => setShowDeleteDialog(false)}
-                open={showDeleteDialog}
-                fullWidth={true}
-            >
-                <div style={{ padding: 25 }}>
-                    <h3 className="text-2xl text-center font-medium mb-5">
-                        Delete Room
-                    </h3>
-                    <h3 className="text-xl font-medium mb-3">
-                        {"Are you sure you want to delete room " + currentRoom.name + "?"}
-                    </h3>
-                    
-                </div>
-                <div
-                    style={{
-                        display: "flex",
-                        paddingRight: 25,
-                        paddingBottom: 25,
-                        justifyContent: "right",
-                    }}
-                >
-                    <button
-                        onClick={() => setShowDialog(false)}
-                        className="mr-4 px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={(e) => remove(e)}
-                        className="px-4 py-2 bg-gray-800 dark:bg-gray-200 border border-transparent rounded-md font-semibold text-xs text-white dark:text-gray-800 uppercase tracking-widest hover:bg-gray-700 dark:hover:bg-white focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150"
-                    >
-                        Confirm
-                    </button>
-                </div>
-            </Dialog>
+            
         </AuthenticatedLayout>
     );
 }
