@@ -50,7 +50,6 @@ class RoomController extends Controller
      */
     public function store(Request $request): Response
     {
-
         try {
             $room = Room::create($request->all());
             return response([ 'success' => $room->roomId], Response::HTTP_CREATED);
