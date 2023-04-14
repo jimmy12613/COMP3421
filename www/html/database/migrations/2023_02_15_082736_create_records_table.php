@@ -19,8 +19,8 @@ return new class extends Migration
             $table->timestamp('timeTo');
             $table->integer('status')->default(0);
             $table->timestamps();
-            // $table->foreign('userId')->references('userId')->on('users');
-            // $table->foreign('roomId')->references('roomId')->on('rooms');
+            $table->foreign('userId')->references('userId')->on('users');
+            $table->foreign('roomId')->references('roomId')->on('rooms');
         });
     }
 
